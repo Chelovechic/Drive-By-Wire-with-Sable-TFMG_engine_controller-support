@@ -1,9 +1,13 @@
 package edn.stratodonut.drivebywire.client;
 
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint.Mode;
+import com.simibubi.create.content.redstone.link.controller.LinkedControllerItem;
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireBlocks;
 import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.compat.TweakedControllerWireServerHandler;
+import edn.stratodonut.drivebywire.items.WireItem;
+import edn.stratodonut.drivebywire.mixinducks.TweakedControllerDuck;
 import edn.stratodonut.drivebywire.network.WireAddConnectionPacket;
 import edn.stratodonut.drivebywire.network.WireNetworkRequestSyncPacket;
 import edn.stratodonut.drivebywire.network.WireRemoveConnectionPacket;
@@ -21,6 +25,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -32,6 +37,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -60,6 +66,14 @@ public final class ClientWireNetworkHandler {
 
     @SubscribeEvent
     public static void onRightClickBlock(final PlayerInteractEvent.RightClickBlock event) {
+        final Item eventItem = event.getItemStack().getItem();
+        final BlockState hitBlock = event.getLevel().getBlockState(event.getHitVec().getBlockPos());
+        if (eventItem instanceof WireItem) {
+            event.setUseBlock(TriState.FALSE); // don't interact with block if connecting wire
+        }
+        if ((eventItem instanceof LinkedControllerItem && hitBlock.is(WireBlocks.CONTROLLER_HUB) || (eventItem instanceof TweakedControllerDuck && hitBlock.is(WireBlocks.TWEAKED_CONTROLLER_HUB)))) {
+            event.setUseItem(TriState.FALSE); // don't start using controller if binding to hub
+        }
         if (event.getSide().isServer()) {
             return;
         }
