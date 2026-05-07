@@ -5,6 +5,7 @@ import dev.ryanhcode.sable.api.schematic.SubLevelSchematicSerializationContext;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.util.BlockFace;
 import edn.stratodonut.drivebywire.wire.graph.WireNetworkNode;
 import edn.stratodonut.drivebywire.wire.graph.WireNetworkNode.InputKey;
@@ -23,6 +24,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -99,8 +102,8 @@ public final class WireNetworkManager {
         return get(level).removeConnectionInternal(level, source, sinkPos, sinkDirection, channel);
     }
 
-    public static boolean removeAllFromSource(final Level level, final BlockPos source) {
-        return get(level).removeAllFromSourceInternal(level, source);
+    public static boolean removeAllFromSource(final ServerPlayer serverPlayer, final Level level, final BlockPos source) {
+        return get(level).removeAllFromSourceInternal(serverPlayer, level, source);
     }
 
     public static void trySetSignalAt(final Level level, final BlockPos source, final String channel, final int value) {
@@ -204,7 +207,7 @@ public final class WireNetworkManager {
         return true;
     }
 
-    public boolean removeAllFromSourceInternal(final Level level, final BlockPos source) {
+    public boolean removeAllFromSourceInternal(final ServerPlayer serverPlayer, final Level level, final BlockPos source) {
         final long sourceKey = source.asLong();
         final Map<String, Set<WireNetworkSink>> perChannel = sinks.remove(sourceKey);
         sourceValues.remove(sourceKey);
@@ -213,6 +216,12 @@ public final class WireNetworkManager {
         }
 
         perChannel.forEach((channel, sinksOnChannel) -> sinksOnChannel.forEach(sink -> {
+            if (!serverPlayer.hasInfiniteMaterials()) {
+                final ItemStack wire = new ItemStack(WireItems.WIRE.get());
+                if (!serverPlayer.addItem(wire)) {
+                    serverPlayer.drop(wire, false);
+                }
+            }
             removeSinkReference(sourceKey, channel, sink);
             applySignalToSink(level, sourceKey, channel, sink, 0);
         }));
