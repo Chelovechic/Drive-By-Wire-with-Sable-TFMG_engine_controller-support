@@ -4,6 +4,7 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint.Mo
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerItem;
 import edn.stratodonut.drivebywire.DriveByWireMod;
 import edn.stratodonut.drivebywire.WireBlocks;
+import edn.stratodonut.drivebywire.WireConfig;
 import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.compat.TweakedControllerWireServerHandler;
 import edn.stratodonut.drivebywire.items.WireItem;
@@ -203,7 +204,7 @@ public final class ClientWireNetworkHandler {
         }
 
         PacketDistributor.sendToServer(new WireAddConnectionPacket(selectedSource, pos, face, currentChannel));
-        heldItem.consume(1, player);
+        if (WireConfig.CONFIG.shouldConsumeWires.get()) heldItem.consume(1, player);
     }
 
     private static void syncManager() {

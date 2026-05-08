@@ -1,6 +1,7 @@
 package edn.stratodonut.drivebywire.network;
 
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireConfig;
 import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.WireSounds;
 import edn.stratodonut.drivebywire.wire.WireNetworkManager;
@@ -36,7 +37,7 @@ public record WireRemoveConnectionPacket(BlockPos source, BlockPos sink, Directi
         }
 
         if (WireNetworkManager.removeConnection(player.level(), payload.source(), payload.sink(), payload.direction(), payload.channel())) {
-            if (!player.hasInfiniteMaterials()) {
+            if (WireConfig.CONFIG.shouldConsumeWires.get() && !player.hasInfiniteMaterials()) {
                 final ItemStack wire = new ItemStack(WireItems.WIRE.get());
                 if (!player.addItem(wire)) {
                     player.drop(wire, false);

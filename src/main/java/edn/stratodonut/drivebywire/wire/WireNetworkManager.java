@@ -5,6 +5,7 @@ import dev.ryanhcode.sable.api.schematic.SubLevelSchematicSerializationContext;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireConfig;
 import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.util.BlockFace;
 import edn.stratodonut.drivebywire.wire.graph.WireNetworkNode;
@@ -216,7 +217,7 @@ public final class WireNetworkManager {
         }
 
         perChannel.forEach((channel, sinksOnChannel) -> sinksOnChannel.forEach(sink -> {
-            if (!serverPlayer.hasInfiniteMaterials()) {
+            if (WireConfig.CONFIG.shouldConsumeWires.get() && !serverPlayer.hasInfiniteMaterials()) {
                 final ItemStack wire = new ItemStack(WireItems.WIRE.get());
                 if (!serverPlayer.addItem(wire)) {
                     serverPlayer.drop(wire, false);
