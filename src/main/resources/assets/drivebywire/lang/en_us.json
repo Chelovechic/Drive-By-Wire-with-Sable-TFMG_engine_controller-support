@@ -70,5 +70,8 @@
   "drivebywire.controller.key.left": "keyLeft",
   "drivebywire.controller.key.right": "keyRight",
   "drivebywire.controller.key.jump": "keyJump",
-  "drivebywire.controller.key.shift": "keyShift"
+  "drivebywire.controller.key.shift": "keyShift",
+
+  "drivebywire.configuration.shouldConsumeWires": "Consumable Wires",
+  "drivebywire.configuration.shouldConsumeWires.tooltip": "Whether or not wires should be consumed upon use when in survival mode."
 }
