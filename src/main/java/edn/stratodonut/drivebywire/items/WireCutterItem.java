@@ -2,6 +2,7 @@ package edn.stratodonut.drivebywire.items;
 
 import edn.stratodonut.drivebywire.wire.WireNetworkManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -22,7 +23,7 @@ public class WireCutterItem extends Item {
         }
 
         final BlockPos pos = context.getClickedPos();
-        if (WireNetworkManager.removeAllFromSource(level, pos)) {
+        if (WireNetworkManager.removeAllFromSource((ServerPlayer) context.getPlayer(), level, pos)) {
             level.playSound(null, pos, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
 

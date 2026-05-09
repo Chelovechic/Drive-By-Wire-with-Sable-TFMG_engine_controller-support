@@ -1,6 +1,7 @@
 package edn.stratodonut.drivebywire.network;
 
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireConfig;
 import edn.stratodonut.drivebywire.WireSounds;
 import edn.stratodonut.drivebywire.wire.WireNetworkManager;
 import io.netty.buffer.ByteBuf;
@@ -13,6 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record WireAddConnectionPacket(BlockPos source, BlockPos sink, Direction direction, String channel) implements CustomPacketPayload {
@@ -44,6 +46,7 @@ public record WireAddConnectionPacket(BlockPos source, BlockPos sink, Direction 
         );
         if (result.isSuccess()) {
             player.level().playSound(null, payload.sink(), WireSounds.PLUG_IN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+            if (WireConfig.CONFIG.shouldConsumeWires.get()) player.getItemInHand(InteractionHand.MAIN_HAND).consume(1, player);
             WireNetworkFullSyncPacket.sendTo(player);
             return;
         }

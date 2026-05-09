@@ -4,6 +4,7 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint.Mo
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerItem;
 import edn.stratodonut.drivebywire.DriveByWireMod;
 import edn.stratodonut.drivebywire.WireBlocks;
+import edn.stratodonut.drivebywire.WireConfig;
 import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.compat.TweakedControllerWireServerHandler;
 import edn.stratodonut.drivebywire.items.WireItem;
@@ -96,7 +97,7 @@ public final class ClientWireNetworkHandler {
             return;
         }
 
-        handleWireUse(player, level, pos, face);
+        handleWireUse(player, heldItem, level, pos, face);
         event.setCancellationResult(net.minecraft.world.InteractionResult.CONSUME);
         event.setCanceled(true);
     }
@@ -182,7 +183,7 @@ public final class ClientWireNetworkHandler {
         syncManager();
     }
 
-    private static void handleWireUse(final Player player, final Level level, final BlockPos pos, final Direction face) {
+    private static void handleWireUse(final Player player, final ItemStack heldItem, final Level level, final BlockPos pos, final Direction face) {
         if (selectedSource == null) {
             selectedSource = pos.immutable();
             changeChannel(level.getBlockState(selectedSource).getBlock(), true);
@@ -203,6 +204,7 @@ public final class ClientWireNetworkHandler {
         }
 
         PacketDistributor.sendToServer(new WireAddConnectionPacket(selectedSource, pos, face, currentChannel));
+        if (WireConfig.CONFIG.shouldConsumeWires.get()) heldItem.consume(1, player);
     }
 
     private static void syncManager() {

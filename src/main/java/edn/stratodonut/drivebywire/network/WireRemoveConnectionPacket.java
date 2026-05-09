@@ -1,6 +1,8 @@
 package edn.stratodonut.drivebywire.network;
 
 import edn.stratodonut.drivebywire.DriveByWireMod;
+import edn.stratodonut.drivebywire.WireConfig;
+import edn.stratodonut.drivebywire.WireItems;
 import edn.stratodonut.drivebywire.WireSounds;
 import edn.stratodonut.drivebywire.wire.WireNetworkManager;
 import io.netty.buffer.ByteBuf;
@@ -11,6 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record WireRemoveConnectionPacket(BlockPos source, BlockPos sink, Direction direction, String channel) implements CustomPacketPayload {
@@ -34,6 +37,12 @@ public record WireRemoveConnectionPacket(BlockPos source, BlockPos sink, Directi
         }
 
         if (WireNetworkManager.removeConnection(player.level(), payload.source(), payload.sink(), payload.direction(), payload.channel())) {
+            if (WireConfig.CONFIG.shouldConsumeWires.get() && !player.hasInfiniteMaterials()) {
+                final ItemStack wire = new ItemStack(WireItems.WIRE.get());
+                if (!player.addItem(wire)) {
+                    player.drop(wire, false);
+                }
+            }
             player.level().playSound(null, payload.sink(), WireSounds.PLUG_OUT.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
         }
 
