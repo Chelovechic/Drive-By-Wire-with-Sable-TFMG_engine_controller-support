@@ -11,6 +11,8 @@
     "compat.MixinLinkedControllerInputPacket",
     "compat.MixinLinkedControllerStopLecternPacket",
     "compat.tracks.MixinSableTrackBlockEntity",
+    "compat.tfmg.MixinTFMGEngineControllerBlock",
+    "compat.tfmg.MixinTFMGEngineControllerBlockEntity",
     "compat.tweaked.MixinLecternTweakedBlock",
     "compat.tweaked.MixinTweakedLecternControllerBlockEntity",
     "compat.tweaked.MixinTweakedController",
